@@ -2,7 +2,8 @@
 /* Full-bleed hero motion, with content protected by a dark overlay. */
 .hero{position:relative;isolation:isolate;overflow:hidden}
 .hero .hero-copy{position:relative;z-index:3;max-width:650px}
-.hero .live-video{position:absolute;inset:0;z-index:0;width:100%;height:100%;min-height:100%;border-radius:0;background:#020817;box-shadow:none}
+.hero .live-video{position:absolute;inset:0;z-index:0;width:100%;height:100%;min-height:100%;border:0!important;border-radius:0;background:#020817;box-shadow:none}
+.hero .live-video:before{display:none}
 .hero .live-video:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(1,3,21,.94) 0%,rgba(1,3,21,.78) 42%,rgba(1,3,21,.34) 100%)}
 .live-video video{background:#020817;object-fit:cover;object-position:center}
 .hero .hero-stat,.hero .hero-orbit{z-index:2}
