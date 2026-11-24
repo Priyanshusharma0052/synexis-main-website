@@ -58,34 +58,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduceMotion) return undefined
-
-    const targets = document.querySelectorAll('.intro, .services article, .legacy-proof, .detail-heading, .detail-grid article, .editorial-head, .project-card, .finder-grid, .steps article, .industries, .articles article, .faq > *, .contact-grid')
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view')
-          observer.unobserve(entry.target)
-        }
-      })
-    }, { threshold: 0.14 })
-    targets.forEach((target, index) => {
-      target.classList.add('reveal-item')
-      target.style.setProperty('--reveal-delay', `${Math.min((index % 4) * 70, 210)}ms`)
-      observer.observe(target)
-    })
-
-    const spotlight = document.querySelector('.cursor-spotlight')
-    const onPointerMove = (event) => {
-      spotlight?.style.setProperty('--x', `${event.clientX}px`)
-      spotlight?.style.setProperty('--y', `${event.clientY}px`)
-    }
-    window.addEventListener('pointermove', onPointerMove, { passive: true })
-    return () => { observer.disconnect(); window.removeEventListener('pointermove', onPointerMove) }
-  }, [loading])
-
-  useEffect(() => {
     const heroVideo = document.querySelector('.live-video video')
     if (!heroVideo) return undefined
 
@@ -97,6 +69,8 @@ function App() {
       })
     }
 
+    heroVideo.preload = 'auto'
+    heroVideo.load()
     heroVideo.addEventListener('canplay', startVideo, { once: true })
     startVideo()
     return () => heroVideo.removeEventListener('canplay', startVideo)
@@ -109,7 +83,7 @@ function App() {
     <div className="progress" style={{ transform: `scaleX(${progress / 100})` }} />
     <header className="header"><a className="brand" href="#top"><i>S</i>synexis<span>.</span></a><button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>{menuOpen ? 'Close ×' : 'Menu +'}</button><nav className={menuOpen ? 'open' : ''}><a href="#services" onClick={() => setMenuOpen(false)}>Services</a><a href="#work" onClick={() => setMenuOpen(false)}>Work</a><a href="#insights" onClick={() => setMenuOpen(false)}>Insights</a><a className="button mini" href="#contact" onClick={() => setMenuOpen(false)}>Let’s talk ↗</a></nav></header>
     <main id="top">
-      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that feels <em>human</em>—and performs.</h1><p>We help ambitious businesses turn their online presence into clearer stories, better experiences and dependable growth.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">See our thinking ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video"><video autoPlay muted loop playsInline poster="https://synexis.in/wp-content/uploads/2025/06/Display-picture-logo-scaled.jpg"><source src="https://synexis.in/wp-content/uploads/2025/05/earth-revolving-1.mp4" type="video/mp4"/></video><div className="hero-stat"><span>ORIGINAL SYNEXIS MOTION</span><strong>Ideas in<br/>constant motion.</strong></div><div className="hero-orbit" /></div></section>
+      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that feels <em>human</em>—and performs.</h1><p>We help ambitious businesses turn their online presence into clearer stories, better experiences and dependable growth.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">See our thinking ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video"><video autoPlay muted loop playsInline preload="auto" poster="https://synexis.in/wp-content/uploads/2025/06/Display-picture-logo-scaled.jpg"><source src="https://synexis.in/wp-content/uploads/2025/05/earth-revolving-1.mp4" type="video/mp4"/></video><div className="hero-stat"><span>ORIGINAL SYNEXIS MOTION</span><strong>Ideas in<br/>constant motion.</strong></div><div className="hero-orbit" /></div></section>
       <section className="marquee marquee-single" aria-label="Synexis capabilities"><div className="marquee-track"><span>Strategy <b>✦</b> Design <b>✦</b> Technology <b>✦</b> Growth</span></div></section>
       <section className="intro shell"><div><p className="eyebrow">WHAT WE DO</p><h2>Your business has a story worth <em>finding.</em></h2></div><p>The right digital presence makes it easier for people to understand, trust and choose you. We bring strategy, design, technology and marketing together to make that happen.</p></section>
       <section className="services shell" id="services">{services.map(([number, title, copy]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p><a href="#contact">Explore this service <b>↗</b></a></article>)}</section>
