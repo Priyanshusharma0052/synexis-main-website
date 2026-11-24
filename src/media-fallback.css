@@ -1,0 +1,13 @@
+/* Deployment-safe media and technology cards. */
+/* Full-bleed hero motion, with content protected by a dark overlay. */
+.hero{position:relative;isolation:isolate;overflow:hidden}
+.hero .hero-copy{position:relative;z-index:3;max-width:650px}
+.hero .live-video{position:absolute;inset:0;z-index:0;width:100%;height:100%;min-height:100%;border-radius:0;background:#020817;box-shadow:none}
+.hero .live-video:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(1,3,21,.94) 0%,rgba(1,3,21,.78) 42%,rgba(1,3,21,.34) 100%)}
+.live-video video{background:#020817;object-fit:cover;object-position:center}
+.hero .hero-stat,.hero .hero-orbit{z-index:2}
+.technology-list{display:grid;grid-template-columns:repeat(3,minmax(80px,1fr));max-width:430px;gap:12px}
+.technology-list>span{min-height:98px;padding:11px 8px 9px;display:grid;place-items:center;gap:7px;background:linear-gradient(145deg,#0d3468,#06142d);border:1px solid rgba(143,190,255,.62);box-shadow:0 10px 21px rgba(0,0,0,.28)}
+.technology-list>span img{width:42px;height:42px;padding:0;margin:0;background:transparent!important;border:0!important;box-shadow:none!important;filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(255,255,255,.45))!important}
+.technology-list>span b{color:#fff;font:700 10px/1.1 var(--sans);letter-spacing:.04em;text-align:center}
+@media(max-width:800px){.hero .live-video{border-radius:0}.hero .live-video:after{background:linear-gradient(180deg,rgba(1,3,21,.64),rgba(1,3,21,.9))}.hero .hero-copy{padding-top:30px}.technology-list{grid-template-columns:repeat(3,1fr);max-width:none}.technology-list>span{min-height:88px}.technology-list>span img{width:36px;height:36px}}
