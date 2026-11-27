@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './app.css'
 import './motion.css'
@@ -13,6 +13,7 @@ import './visible-cards.css'
 import './premium-motion.css'
 import './media-fallback.css'
 import './studio-experience.css'
+import './signal-system.css'
 
 const services = [
   ['01', 'Web development', 'High-performing websites, e-commerce stores, WordPress builds and custom web applications.'],
@@ -66,6 +67,73 @@ const deliverables = [
   ['Brand presence', 'Positioning, identity, campaign creative, social content and clear communication systems.'],
 ]
 
+function SignalField() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
+    if (!canvas || !context) return undefined
+    const pointer = { x: -999, y: -999 }
+    const dots = Array.from({ length: 54 }, (_, index) => ({
+      x: (index * 73 % 1000) / 1000,
+      y: (index * 149 % 1000) / 1000,
+      speed: 0.00015 + (index % 7) * 0.00004,
+      size: 1.4 + (index % 4) * 0.55,
+    }))
+    let frame = 0
+    let animation = 0
+    const draw = () => {
+      const rect = canvas.getBoundingClientRect()
+      const ratio = Math.min(window.devicePixelRatio || 1, 2)
+      const width = Math.max(1, rect.width)
+      const height = Math.max(1, rect.height)
+      if (canvas.width !== width * ratio || canvas.height !== height * ratio) {
+        canvas.width = width * ratio
+        canvas.height = height * ratio
+        context.setTransform(ratio, 0, 0, ratio, 0, 0)
+      }
+      frame += 1
+      context.clearRect(0, 0, width, height)
+      const glow = context.createRadialGradient(width * .68, height * .4, 0, width * .68, height * .4, width * .72)
+      glow.addColorStop(0, 'rgba(65, 123, 255, .25)')
+      glow.addColorStop(.45, 'rgba(111, 69, 255, .12)')
+      glow.addColorStop(1, 'rgba(1, 3, 21, 0)')
+      context.fillStyle = glow
+      context.fillRect(0, 0, width, height)
+      const points = dots.map((dot, index) => {
+        const time = frame * dot.speed
+        return { x: ((dot.x + time + Math.sin(time * 8 + index) * .025) % 1) * width, y: ((dot.y + Math.cos(time * 7 + index) * .025 + 1) % 1) * height, size: dot.size, index }
+      })
+      points.forEach((point, index) => {
+        for (let next = index + 1; next < points.length; next += 1) {
+          const other = points[next]
+          const distance = Math.hypot(point.x - other.x, point.y - other.y)
+          if (distance < width * .145) {
+            context.strokeStyle = `rgba(144, 116, 255, ${.2 * (1 - distance / (width * .145))})`
+            context.lineWidth = .7
+            context.beginPath(); context.moveTo(point.x, point.y); context.lineTo(other.x, other.y); context.stroke()
+          }
+        }
+        const pull = Math.hypot(point.x - pointer.x, point.y - pointer.y)
+        context.fillStyle = pull < 120 ? '#c5ff8c' : (point.index % 9 === 0 ? '#b291ff' : '#75a9ff')
+        context.beginPath(); context.arc(point.x, point.y, pull < 120 ? point.size * 1.9 : point.size, 0, Math.PI * 2); context.fill()
+      })
+      const scanX = (frame % 520) / 520 * (width + 140) - 70
+      context.fillStyle = 'rgba(190, 255, 132, .07)'
+      context.fillRect(scanX, 0, 2, height)
+      animation = window.requestAnimationFrame(draw)
+    }
+    const move = (event) => { const box = canvas.getBoundingClientRect(); pointer.x = event.clientX - box.left; pointer.y = event.clientY - box.top }
+    canvas.addEventListener('pointermove', move)
+    canvas.addEventListener('pointerleave', () => { pointer.x = -999; pointer.y = -999 })
+    animation = window.requestAnimationFrame(draw)
+    return () => { window.cancelAnimationFrame(animation); canvas.removeEventListener('pointermove', move) }
+  }, [])
+
+  return <canvas ref={canvasRef} className="signal-field" aria-label="Interactive Synexis signal visual" role="img" />
+}
+
 function App() {
   const [loading, setLoading] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -85,41 +153,6 @@ function App() {
     return () => { window.clearTimeout(timer); window.removeEventListener('scroll', updateProgress) }
   }, [])
 
-  useEffect(() => {
-    const heroVideo = document.querySelector('.live-video video')
-    const hero = document.querySelector('.hero')
-    if (!heroVideo || !hero) return undefined
-    let frameRequest = 0
-
-    const scrubVideo = () => {
-      frameRequest = 0
-      if (!Number.isFinite(heroVideo.duration) || heroVideo.duration <= 0) return
-      const heroTop = hero.offsetTop
-      const scrubDistance = Math.max(hero.offsetHeight + window.innerHeight * 0.45, 1)
-      const amount = Math.min(1, Math.max(0, (window.scrollY - heroTop + window.innerHeight * 0.12) / scrubDistance))
-      const frameTime = 0.04 + amount * Math.max(0, heroVideo.duration - 0.08)
-      if (Math.abs(heroVideo.currentTime - frameTime) > 0.025) heroVideo.currentTime = frameTime
-      hero.style.setProperty('--motion-progress', amount.toFixed(3))
-    }
-    const requestScrub = () => {
-      if (!frameRequest) frameRequest = window.requestAnimationFrame(scrubVideo)
-    }
-
-    heroVideo.preload = 'auto'
-    heroVideo.muted = true
-    heroVideo.pause()
-    heroVideo.addEventListener('loadedmetadata', requestScrub)
-    window.addEventListener('scroll', requestScrub, { passive: true })
-    window.addEventListener('resize', requestScrub)
-    requestScrub()
-    return () => {
-      heroVideo.removeEventListener('loadedmetadata', requestScrub)
-      window.removeEventListener('scroll', requestScrub)
-      window.removeEventListener('resize', requestScrub)
-      if (frameRequest) window.cancelAnimationFrame(frameRequest)
-    }
-  }, [loading])
-
   if (loading) return <div className="loader"><div className="loader-symbol">S</div><p>Synexis Technologies</p><span /></div>
   const [planTitle, planCopy] = plans[plan]
 
@@ -127,7 +160,7 @@ function App() {
     <div className="progress" style={{ transform: `scaleX(${progress / 100})` }} />
     <header className="header"><a className="brand" href="#top"><i>S</i>synexis<span>.</span></a><button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>{menuOpen ? 'Close ×' : 'Menu +'}</button><nav className={menuOpen ? 'open' : ''}><div className="nav-dropdown"><button type="button">Services <b>+</b></button><div className="nav-panel">{services.map(([, title]) => <a href="#services" onClick={() => setMenuOpen(false)} key={title}>{title}<span>↗</span></a>)}</div></div><a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#work" onClick={() => setMenuOpen(false)}>Work</a><a href="#process" onClick={() => setMenuOpen(false)}>Process</a><a href="#insights" onClick={() => setMenuOpen(false)}>Insights</a><a className="button mini" href="#contact" onClick={() => setMenuOpen(false)}>Let’s talk ↗</a></nav></header>
     <main id="top">
-      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that feels <em>human</em>—and performs.</h1><p>We help ambitious businesses turn their online presence into clearer stories, better experiences and dependable growth.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">See our thinking ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video"><video muted defaultMuted playsInline preload="auto" poster="https://synexis.in/wp-content/uploads/2025/06/Display-picture-logo-scaled.jpg"><source src="/earth-revolving.mp4" type="video/mp4"/></video><div className="hero-stat"><span>ORIGINAL SYNEXIS MOTION</span><strong>Ideas in<br/>constant motion.</strong></div><div className="scroll-film-ui" aria-hidden="true"><span>SCROLL FILM / 001—240</span><i/><b>Move to play</b></div><div className="hero-orbit" /></div></section>
+      <section className="hero shell signal-hero"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that <em>moves</em> like your business does.</h1><p>Synexis turns complex ideas into clear, high-performing digital systems—built to be noticed, understood and acted on.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">Enter the signal ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video signal-stage"><SignalField/><div className="signal-tag tag-one">STRATEGY / ONLINE</div><div className="signal-tag tag-two">CREATIVE / LINKED</div><div className="signal-tag tag-three">TECH / ACTIVE</div><div className="hero-stat"><span>LIVE SYNEXIS SIGNAL</span><strong>Ideas,<br/>in motion.</strong></div><div className="scroll-film-ui" aria-hidden="true"><span>INTERACTIVE SIGNAL FIELD</span><i/><b>Move to explore</b></div><div className="hero-orbit" /></div></section>
       <section className="marquee marquee-single" aria-label="Synexis capabilities"><div className="marquee-track"><span>Strategy <b>✦</b> Design <b>✦</b> Technology <b>✦</b> Growth</span></div></section>
       <section className="intro shell"><div><p className="eyebrow">WHAT WE DO</p><h2>Your business has a story worth <em>finding.</em></h2></div><p>The right digital presence makes it easier for people to understand, trust and choose you. We bring strategy, design, technology and marketing together to make that happen.</p></section>
       <section className="experience-shell" aria-label="How Synexis brings expertise together"><div className="shell experience-grid"><div className="experience-intro"><p className="eyebrow">ONE CONNECTED PROCESS</p><h2>Different skills.<br/><em>One</em> clear outcome.</h2><p>Every specialist works around the same customer journey. That means better decisions, smoother execution and digital work that feels connected from the first click.</p><a className="underlink" href="#contact">Bring your next idea to the table ↗</a></div><div className="discipline-orbit">{disciplines.map(([initial, title, copy], index) => <article className={`discipline discipline-${index + 1}`} key={title}><span>{initial}</span><div><small>0{index + 1}</small><h3>{title}</h3><p>{copy}</p></div></article>)}<div className="orbit-core"><b>ST</b><span>SYNCED<br/>THINKING</span></div><i className="orbit-ring ring-one"/><i className="orbit-ring ring-two"/></div></div></section>
