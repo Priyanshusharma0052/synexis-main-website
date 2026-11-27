@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import NewHome from './NewHome'
 import PremiumContent from './PremiumContent'
+import OriginalContent from './OriginalContent'
 import './app.css'
 import './motion.css'
 import './legacy.css'
@@ -188,4 +189,4 @@ function App() {
   </>
 }
 
-createRoot(document.getElementById('root')).render(<><PremiumContent /><NewHome /></>)
+createRoot(document.getElementById('root')).render(<><PremiumContent /><NewHome /><OriginalContent /></>)
