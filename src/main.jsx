@@ -188,4 +188,4 @@ function App() {
   </>
 }
 
-createRoot(document.getElementById('root')).render(<><NewHome /><PremiumContent /></>)
+createRoot(document.getElementById('root')).render(<><PremiumContent /><NewHome /></>)
