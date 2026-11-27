@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import NewHome from './NewHome'
+import SubPages from './SubPages'
 import './app.css'
 import './motion.css'
 import './legacy.css'
@@ -187,4 +188,4 @@ function App() {
   </>
 }
 
-createRoot(document.getElementById('root')).render(<NewHome />)
+createRoot(document.getElementById('root')).render(location.pathname==='/'?<NewHome />:<SubPages />)
