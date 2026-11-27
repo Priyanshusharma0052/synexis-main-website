@@ -14,6 +14,7 @@ import './premium-motion.css'
 import './media-fallback.css'
 import './studio-experience.css'
 import './signal-system.css'
+import './cinematic-direction.css'
 
 const services = [
   ['01', 'Web development', 'High-performing websites, e-commerce stores, WordPress builds and custom web applications.'],
