@@ -47,6 +47,13 @@ const disciplines = [
   ['G', 'Growth', 'Search, campaigns and measurement made useful and accountable.'],
 ]
 
+const outcomes = [
+  ['01', 'Discover', 'Find the clearest opportunity in your customer journey.'],
+  ['02', 'Design', 'Turn it into a compelling, usable digital experience.'],
+  ['03', 'Deploy', 'Launch with strong foundations for speed and visibility.'],
+  ['04', 'Develop', 'Learn from real behaviour and keep moving forward.'],
+]
+
 function App() {
   const [loading, setLoading] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -68,20 +75,37 @@ function App() {
 
   useEffect(() => {
     const heroVideo = document.querySelector('.live-video video')
-    if (!heroVideo) return undefined
+    const hero = document.querySelector('.hero')
+    if (!heroVideo || !hero) return undefined
+    let frameRequest = 0
 
-    const startVideo = () => {
-      heroVideo.muted = true
-      heroVideo.play().catch(() => {
-        // Browsers may wait until the first user gesture; the native autoplay
-        // attribute remains in place and will retry when that happens.
-      })
+    const scrubVideo = () => {
+      frameRequest = 0
+      if (!Number.isFinite(heroVideo.duration) || heroVideo.duration <= 0) return
+      const heroTop = hero.offsetTop
+      const scrubDistance = Math.max(hero.offsetHeight + window.innerHeight * 0.45, 1)
+      const amount = Math.min(1, Math.max(0, (window.scrollY - heroTop + window.innerHeight * 0.12) / scrubDistance))
+      const frameTime = 0.04 + amount * Math.max(0, heroVideo.duration - 0.08)
+      if (Math.abs(heroVideo.currentTime - frameTime) > 0.025) heroVideo.currentTime = frameTime
+      hero.style.setProperty('--motion-progress', amount.toFixed(3))
+    }
+    const requestScrub = () => {
+      if (!frameRequest) frameRequest = window.requestAnimationFrame(scrubVideo)
     }
 
     heroVideo.preload = 'auto'
-    heroVideo.addEventListener('canplay', startVideo, { once: true })
-    startVideo()
-    return () => heroVideo.removeEventListener('canplay', startVideo)
+    heroVideo.muted = true
+    heroVideo.pause()
+    heroVideo.addEventListener('loadedmetadata', requestScrub)
+    window.addEventListener('scroll', requestScrub, { passive: true })
+    window.addEventListener('resize', requestScrub)
+    requestScrub()
+    return () => {
+      heroVideo.removeEventListener('loadedmetadata', requestScrub)
+      window.removeEventListener('scroll', requestScrub)
+      window.removeEventListener('resize', requestScrub)
+      if (frameRequest) window.cancelAnimationFrame(frameRequest)
+    }
   }, [loading])
 
   if (loading) return <div className="loader"><div className="loader-symbol">S</div><p>Synexis Technologies</p><span /></div>
@@ -91,14 +115,16 @@ function App() {
     <div className="progress" style={{ transform: `scaleX(${progress / 100})` }} />
     <header className="header"><a className="brand" href="#top"><i>S</i>synexis<span>.</span></a><button className="menu" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>{menuOpen ? 'Close ×' : 'Menu +'}</button><nav className={menuOpen ? 'open' : ''}><a href="#services" onClick={() => setMenuOpen(false)}>Services</a><a href="#work" onClick={() => setMenuOpen(false)}>Work</a><a href="#insights" onClick={() => setMenuOpen(false)}>Insights</a><a className="button mini" href="#contact" onClick={() => setMenuOpen(false)}>Let’s talk ↗</a></nav></header>
     <main id="top">
-      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that feels <em>human</em>—and performs.</h1><p>We help ambitious businesses turn their online presence into clearer stories, better experiences and dependable growth.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">See our thinking ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video"><video autoPlay muted defaultMuted loop playsInline preload="auto" onLoadedData={(event) => { event.currentTarget.muted = true; event.currentTarget.play().catch(() => {}) }} onCanPlay={(event) => event.currentTarget.play().catch(() => {})} poster="https://synexis.in/wp-content/uploads/2025/06/Display-picture-logo-scaled.jpg"><source src="/earth-revolving.mp4" type="video/mp4"/></video><div className="hero-stat"><span>ORIGINAL SYNEXIS MOTION</span><strong>Ideas in<br/>constant motion.</strong></div><div className="hero-orbit" /></div></section>
+      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">DEHRADUN · INDIA · EVERYWHERE ONLINE</p><h1>Digital work that feels <em>human</em>—and performs.</h1><p>We help ambitious businesses turn their online presence into clearer stories, better experiences and dependable growth.</p><div className="actions"><a className="button" href="#contact">Start a conversation ↗</a><a className="underlink" href="#work">See our thinking ↓</a></div><small><b /> A thoughtful reply within one business day</small></div><div className="hero-image live-video"><video muted defaultMuted playsInline preload="auto" poster="https://synexis.in/wp-content/uploads/2025/06/Display-picture-logo-scaled.jpg"><source src="/earth-revolving.mp4" type="video/mp4"/></video><div className="hero-stat"><span>ORIGINAL SYNEXIS MOTION</span><strong>Ideas in<br/>constant motion.</strong></div><div className="scroll-film-ui" aria-hidden="true"><span>SCROLL FILM / 001—240</span><i/><b>Move to play</b></div><div className="hero-orbit" /></div></section>
       <section className="marquee marquee-single" aria-label="Synexis capabilities"><div className="marquee-track"><span>Strategy <b>✦</b> Design <b>✦</b> Technology <b>✦</b> Growth</span></div></section>
       <section className="intro shell"><div><p className="eyebrow">WHAT WE DO</p><h2>Your business has a story worth <em>finding.</em></h2></div><p>The right digital presence makes it easier for people to understand, trust and choose you. We bring strategy, design, technology and marketing together to make that happen.</p></section>
       <section className="experience-shell" aria-label="How Synexis brings expertise together"><div className="shell experience-grid"><div className="experience-intro"><p className="eyebrow">ONE CONNECTED PROCESS</p><h2>Different skills.<br/><em>One</em> clear outcome.</h2><p>Every specialist works around the same customer journey. That means better decisions, smoother execution and digital work that feels connected from the first click.</p><a className="underlink" href="#contact">Bring your next idea to the table ↗</a></div><div className="discipline-orbit">{disciplines.map(([initial, title, copy], index) => <article className={`discipline discipline-${index + 1}`} key={title}><span>{initial}</span><div><small>0{index + 1}</small><h3>{title}</h3><p>{copy}</p></div></article>)}<div className="orbit-core"><b>ST</b><span>SYNCED<br/>THINKING</span></div><i className="orbit-ring ring-one"/><i className="orbit-ring ring-two"/></div></div></section>
       <section className="impact-strip"><div className="impact-track"><span>Clear strategy</span><b>→</b><span>Built with care</span><b>→</b><span>Ready to grow</span><b>→</b><span>Made for people</span><b>→</b><span>Clear strategy</span><b>→</b></div></section>
-      <section className="services shell" id="services">{services.map(([number, title, copy]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p><a href="#contact">Explore this service <b>↗</b></a></article>)}</section>
+      <section className="services shell motion-section" id="services">{services.map(([number, title, copy]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p><a href="#contact">Explore this service <b>↗</b></a></article>)}</section>
       <section className="legacy-proof shell"><div className="legacy-image"><img src="https://synexis.in/wp-content/uploads/2026/06/synexis-technologies-about.webp" alt="Synexis Technologies brand visual"/><span>Synexis / rooted in real work</span></div><div className="legacy-copy"><p className="eyebrow">ROOTED IN REAL WORK</p><h2>A local team with a wider <em>view.</em></h2><p>Based at Doon IT Park in Dehradun, Synexis brings strategy, technology and creative thinking together for businesses that want their digital presence to work harder.</p><div className="technology-list"><span><img src="https://synexis.in/wp-content/uploads/2025/06/html-icons-syenxis-technologies.png" alt="HTML"/><b>HTML</b></span><span><img src="https://synexis.in/wp-content/uploads/2025/06/wordpress-icon-syenxis-technologies.png" alt="WordPress"/><b>WordPress</b></span><span><img src="https://synexis.in/wp-content/uploads/2025/06/google-ads-syenxis-technologies.png" alt="Google Ads"/><b>Google Ads</b></span><span><img src="https://synexis.in/wp-content/uploads/2025/06/shopify-logo.png" alt="Shopify"/><b>Shopify</b></span><span><img src="https://synexis.in/wp-content/uploads/2025/06/meta-synexis-technologies.png" alt="Meta"/><b>Meta</b></span><span><img src="https://synexis.in/wp-content/uploads/2025/06/ahref-logo-synexis-technologies.png" alt="Ahrefs"/><b>Ahrefs</b></span></div><a className="underlink" href="#contact">Talk to the team ↗</a></div></section>
       <section className="brand-details"><div className="shell"><div className="detail-heading"><p className="eyebrow">THE SYNEXIS DIFFERENCE</p><h2>Serious about results.<br/><em>Easy</em> to work with.</h2></div><div className="detail-grid"><article><span>01</span><h3>Customized strategies</h3><p>Every solution is shaped around your business goals, audience and growth stage.</p></article><article><span>02</span><h3>Results-driven approach</h3><p>We focus on the outcomes that matter: quality leads, visibility and sustainable growth.</p></article><article><span>03</span><h3>Transparent communication</h3><p>Clear progress, direct answers and reporting that makes sense without the jargon.</p></article><article><span>04</span><h3>Modern tools, human thinking</h3><p>We use current technology and practical insight to give your business a useful edge.</p></article></div></div></section>
+      <section className="command-center shell motion-section"><div className="command-copy"><p className="eyebrow">YOUR GROWTH, MADE VISIBLE</p><h2>One clearer view of what is <em>working.</em></h2><p>Good digital work should never feel like a black box. Every Synexis project is designed around an understandable path from attention to action—and a practical way to improve it.</p><ul>{['A website with a job to do','Campaigns connected to customer intent','Reporting made for decisions, not dashboards'].map((item) => <li key={item}><b>✦</b>{item}</li>)}</ul><a href="#contact" className="underlink">Build your growth system ↗</a></div><div className="signal-console" aria-label="Illustration of a Synexis growth dashboard"><div className="console-top"><span><b/> System active</span><small>LIVE / DEHRADUN</small></div><div className="console-metrics"><div><small>Qualified signals</small><strong>+38<span>%</span></strong><i/></div><div><small>Experience score</small><strong>94<span>/100</span></strong><i/></div></div><div className="console-chart"><span>Growth signal</span><svg viewBox="0 0 540 180" role="img" aria-label="Rising growth line"><defs><linearGradient id="signalGradient" x1="0" x2="1"><stop stopColor="#8356ff"/><stop offset="1" stopColor="#bcff83"/></linearGradient></defs><path d="M0 153 C55 136 71 142 116 116 S185 122 224 82 S290 109 336 62 S410 80 450 38 S505 51 540 10" fill="none" stroke="url(#signalGradient)" strokeWidth="5"/><path d="M0 153 C55 136 71 142 116 116 S185 122 224 82 S290 109 336 62 S410 80 450 38 S505 51 540 10 V180 H0Z" fill="url(#signalGradient)" opacity=".12"/></svg><b className="chart-beacon"/></div><div className="console-feed"><span>01 / Strategy aligned</span><span>02 / Experience launched</span><span>03 / Insight received</span></div></div></section>
+      <section className="outcome-path motion-section"><div className="shell"><div className="path-heading"><p className="eyebrow">FROM IDEA TO IMPACT</p><h2>A better system for making <em>progress.</em></h2><p>We bring the right disciplines together at the right moment, so your project stays focused from the first conversation to the next opportunity.</p></div><div className="outcome-grid">{outcomes.map(([number, title, copy]) => <article key={number}><span>{number}</span><i>↘</i><h3>{title}</h3><p>{copy}</p></article>)}</div></div></section>
       <section className="editorial" id="work"><div className="shell editorial-head"><p className="eyebrow">SELECTED THINKING</p><h2>Design that earns attention.<br/><em>Thinking</em> that earns trust.</h2></div><div className="project-rail">{projects.map((project, index) => <button className="project-card" key={project.title} onClick={() => setSelectedProject(project)}><img src={project.image} alt=""/><span>0{index + 1} / {project.type}</span><h3>{project.title}</h3><b>View story ↗</b></button>)}</div></section>
       <section className="finder"><div className="shell finder-grid"><div><p className="eyebrow">FIND YOUR NEXT STEP</p><h2>What does your business need <em>most</em> right now?</h2><p>Choose the outcome that matters. We’ll point you toward a practical place to begin.</p></div><div className="finder-box"><div className="finder-tabs">{Object.keys(plans).map((key, index) => <button className={plan === key ? 'active' : ''} key={key} onClick={() => setPlan(key)}><span>0{index + 1}</span>{key === 'website' ? 'A website that converts' : key === 'visibility' ? 'More qualified visibility' : 'A stronger brand presence'}</button>)}</div><div className="finder-answer"><small>A GOOD STARTING POINT</small><h3>{planTitle}</h3><p>{planCopy}</p><a className="button" href="#contact">Discuss this direction ↗</a></div></div></div></section>
       <section className="process"><div className="shell"><p className="eyebrow">HOW WE WORK</p><h2>A simple process.<br/>No mysterious <em>middle.</em></h2><div className="steps">{[['01','Listen','We get close to your goals, challenges and customers.'],['02','Make a plan','We set priorities and agree what success looks like.'],['03','Build and launch','We create carefully and communicate clearly through delivery.'],['04','Learn and improve','We measure what matters and make the next move smarter.']].map(([n,t,c])=><article key={n}><span>{n}</span><h3>{t}</h3><p>{c}</p></article>)}</div></div></section>

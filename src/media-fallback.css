@@ -9,6 +9,8 @@
 .hero .hero-image.live-video:before{display:none!important;content:none!important}
 .live-video video{background:#020817;object-fit:cover;object-position:center}
 .hero .hero-stat,.hero .hero-orbit{z-index:2}
+.scroll-film-ui{position:absolute;z-index:3;right:clamp(18px,4vw,58px);bottom:clamp(20px,4vw,46px);display:grid;grid-template-columns:auto 88px;align-items:center;gap:8px 12px;color:#fff;text-transform:uppercase;letter-spacing:.12em;font:700 9px/1 var(--sans)}
+.scroll-film-ui span{grid-column:1/-1;color:#cfc2ff}.scroll-film-ui i{display:block;width:88px;height:2px;background:rgba(255,255,255,.25);overflow:hidden}.scroll-film-ui i:after{content:'';display:block;width:100%;height:100%;background:#a582ff;transform:scaleX(var(--motion-progress,0));transform-origin:left;transition:transform .08s linear}.scroll-film-ui b{font-size:9px;color:#baff81;white-space:nowrap}@media(max-width:650px){.scroll-film-ui{right:20px;bottom:18px;grid-template-columns:auto 60px}.scroll-film-ui i{width:60px}.scroll-film-ui b{font-size:8px}}
 .technology-list{display:grid;grid-template-columns:repeat(3,minmax(80px,1fr));max-width:430px;gap:12px}
 .technology-list>span{min-height:98px;padding:11px 8px 9px;display:grid;place-items:center;gap:7px;background:linear-gradient(145deg,#0d3468,#06142d);border:1px solid rgba(143,190,255,.62);box-shadow:0 10px 21px rgba(0,0,0,.28)}
 .technology-list>span img{width:42px;height:42px;padding:0;margin:0;background:transparent!important;border:0!important;box-shadow:none!important;filter:brightness(0) invert(1) drop-shadow(0 0 4px rgba(255,255,255,.45))!important}
