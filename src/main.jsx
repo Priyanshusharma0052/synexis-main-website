@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import NewHome from './NewHome'
 import SubPages from './SubPages'
 import TrustPanel from './TrustPanel'
+import MotionScenes from './MotionScenes'
 import './app.css'
 import './motion.css'
 import './legacy.css'
@@ -189,4 +190,4 @@ function App() {
   </>
 }
 
-createRoot(document.getElementById('root')).render(location.pathname==='/'?<><NewHome /><TrustPanel /></>:<><SubPages /><TrustPanel /></>)
+createRoot(document.getElementById('root')).render(location.pathname==='/'?<><NewHome /><MotionScenes /><TrustPanel /></>:<><SubPages /><MotionScenes /><TrustPanel /></>)
