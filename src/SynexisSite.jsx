@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './synexis-site.css'
 
 const contact = { phone: '+91 85273 97361', secondary: '+91 95572 10583', email: 'synexistechnologies@gmail.com' }
