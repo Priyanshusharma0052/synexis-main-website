@@ -1,0 +1,24 @@
+/* Original brand asset with lightweight motion layers. */
+.brand-logo-image{display:block;width:154px;height:auto;max-height:46px;object-fit:contain;object-position:left center}
+.fresh-site main{position:relative;isolation:isolate}
+.fresh-site main::before,.fresh-site main::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+.fresh-site main::before{opacity:.7;background:linear-gradient(105deg,transparent 0 45%,rgba(166,255,98,.25) 45.1% 45.2%,transparent 45.3% 100%);background-size:250% 250%;animation:signal-sweep 13s linear infinite}
+.fresh-site main::after{background:radial-gradient(circle at 15% 20%,rgba(126,93,255,.17),transparent 18%),radial-gradient(circle at 85% 64%,rgba(166,255,98,.11),transparent 22%);animation:ambient-drift 16s ease-in-out infinite alternate}
+.new-hero,.service-overview,.split-story,.work-section,.industry-section,.insight-section{position:relative;overflow:hidden}
+.new-hero::after,.service-overview::after,.work-section::after,.industry-section::after{content:"";position:absolute;inset:-30%;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 88px,rgba(166,255,98,.11) 89px 90px,transparent 91px 180px);transform:skewX(-18deg);opacity:.28;animation:line-drift 22s linear infinite}
+.new-hero>* ,.service-overview>* ,.split-story>* ,.work-section>* ,.industry-section>* ,.insight-section>*{position:relative;z-index:1}
+.signal-frame{box-shadow:0 25px 80px rgba(0,0,0,.32);animation:frame-float 7s ease-in-out infinite}
+.frame-orb.one{animation-duration:13s}.frame-orb.two{animation-duration:10s}.frame-orb.three{animation-duration:24s}
+.wall-card{will-change:transform}.wall-card:nth-child(2n) .wall-orbit{animation:orbit-pulse 5s ease-in-out infinite}.wall-card:nth-child(3n) .wall-orbit{animation-delay:-2.3s}
+.work-art::after{content:"";position:absolute;inset:-30%;background:linear-gradient(115deg,transparent 42%,rgba(166,255,98,.22) 50%,transparent 58%);transform:translateX(-90%);animation:art-scan 5.5s ease-in-out infinite}.work-card:nth-child(2) .work-art::after{animation-delay:-1.7s}.work-card:nth-child(3) .work-art::after{animation-delay:-3.4s}
+.industry-section a::after{content:"";position:absolute;width:8px;height:8px;right:22px;top:22px;border-radius:50%;background:#a6ff62;box-shadow:0 0 0 0 rgba(166,255,98,.45);animation:ping 2.8s ease-out infinite}.industry-section a:nth-child(2n)::after{animation-delay:-1.4s}
+.moving-type div{animation-duration:18s}
+@keyframes signal-sweep{to{background-position:250% 250%}}
+@keyframes ambient-drift{to{transform:scale(1.15) translate3d(2%,-2%,0);filter:hue-rotate(15deg)}}
+@keyframes line-drift{to{transform:translateX(18%) skewX(-18deg)}}
+@keyframes frame-float{50%{transform:translateY(-10px)}}
+@keyframes orbit-pulse{50%{transform:scale(1.18) rotate(35deg);border-color:#a6ff62}}
+@keyframes art-scan{55%,100%{transform:translateX(90%)}}
+@keyframes ping{70%{box-shadow:0 0 0 13px rgba(166,255,98,0)}}
+@media (prefers-reduced-motion:reduce){.fresh-site *, .fresh-site *::before,.fresh-site *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+@media(max-width:650px){.brand-logo-image{width:132px;max-height:39px}.new-hero::after,.service-overview::after,.work-section::after,.industry-section::after{opacity:.17}.signal-frame{animation:none}}
