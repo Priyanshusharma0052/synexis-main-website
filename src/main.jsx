@@ -1,12 +1,5 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import NewHome from './NewHome'
-import SubPages from './SubPages'
-import './new-home.css'
-import './subpages.css'
+import SynexisSite from './SynexisSite'
 
-const path = window.location.pathname
-
-createRoot(document.getElementById('root')).render(
-  path === '/' ? <NewHome /> : <SubPages />,
-)
+createRoot(document.getElementById('root')).render(<SynexisSite />)
